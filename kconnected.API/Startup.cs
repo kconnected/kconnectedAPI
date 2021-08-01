@@ -40,6 +40,7 @@ namespace kconnected.API
             services.AddSingleton<IRepository<Skill>,InMemoryDbRepository<Skill>>();
             //Service layer dependencies
             services.AddScoped<IUserService,UserService>();
+            services.AddScoped<ISkillService,SkillService>();
 
             services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
             services.AddSwaggerGen(c =>

@@ -27,8 +27,7 @@ namespace kconnected.API.Controllers
 
         [HttpPost]
         public async Task<ActionResult<UserDTO>> CreateUserAsync(CreateUserDTO user)
-        {
-            
+        {            
             var createdUser = await _userService.CreateAsync(user);
 
             return CreatedAtAction(nameof(GetUserAsync), new { id = createdUser.Id }, createdUser);

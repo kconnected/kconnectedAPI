@@ -17,6 +17,7 @@ namespace kconnected.API.Services
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Skill> _skillRepository;
 
+
         public UserService(IRepository<User> userRepository, IRepository<Skill> skillRepository)
         {
             _userRepository = userRepository;
@@ -31,41 +32,26 @@ namespace kconnected.API.Services
                 Surname = item.LastName,
                 Email = item.Email,
                 UserName = item.UserName,
-                Skills = item.Skills.Select(x=>x.AsEntity()).ToList()
+                RegistrationDate = DateTimeOffset.UtcNow,
+                Skills = new List<Skill>()
+                
             };
+            foreach (var skill in item.Skills)
+            {
+                if(_skillRepository.ExistsAsync(skill.Name).Result)
+                {
+                    toCreate.Skills.Add(_skillRepository.GetItemAsync(skill.Name).AsTask().Result);
+                }
+                else
+                {
+                    var newskill = skill.AsEntity();
+                    toCreate.Skills.Add(newskill);
+                }   
+            }
 
             await _userRepository.AddItemAsync(toCreate);
             await _userRepository.SaveChangesAsync();
 
-            // //create user with info
-            // User toCreate = new()
-            // {
-            //     Id = Guid.NewGuid(),
-            //     Name = item.FirstName,
-            //     Surname = item.LastName,
-            //     Email = item.Email,
-            //     UserName = item.UserName
-            // };
-            // await _userRepository.AddItemAsync(toCreate);
-            // _userRepository.SaveChangesAsync();
-            // //with skill info create skill if not exists
-            // Parallel.ForEach(item.Skills, async skill => 
-            // {
-            //     if (!_skillRepository.ExistsAsync(skill.Name).Result)
-            //     {
-            //         await _skillRepository.AddItemAsync(new Skill { Name = skill.Name, Description = skill.Description });
-            //         await _skillRepository.SaveChangesAsync();
-            //     }
-            //      var foundSkill =  _skillRepository.GetItemAsync(skill.Name).Result;
-            //     // foundSkill.Users.Add(toCreate);
-            //     var foundUser =  _userRepository.GetItemAsync(toCreate.Id).Result;
-            //     foundUser.Skills.Add(foundSkill);
-            // });
-            // await _userRepository.SaveChangesAsync();
-            // await _skillRepository.SaveChangesAsync();
-            // //or reference to player
-
-            // throw new NotImplementedException();
             return _userRepository.GetItemAsync(toCreate.Id).Result.AsDTO();
         }
 
