@@ -11,9 +11,8 @@ namespace kconnected.API.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public string Name { get; set; } 
-        public string Description { get; set; }
+        public string Name { get; set; } = "Yet Another JS Framework";
 
-        public List<User> Users { get; set; }
+        public List<User>? Users { get; set; }
     }
 }

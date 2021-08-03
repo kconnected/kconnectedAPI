@@ -36,8 +36,8 @@ namespace kconnected.API
 
             //Repository layer dependencies
             services.AddSingleton<DbContext,kconnectedAPIDbContext>();
-            services.AddSingleton<IRepository<User>,InMemoryDbRepository<User>>();
-            services.AddSingleton<IRepository<Skill>,InMemoryDbRepository<Skill>>();
+            services.AddSingleton<IUserRepository,UserRepository>();
+            services.AddSingleton<ISkillRepository,SkillRepository>();
             //Service layer dependencies
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<ISkillService,SkillService>();
@@ -57,8 +57,13 @@ namespace kconnected.API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "kconnected.API v1"));
+                app.UseSwaggerUI(c =>
+                {
+                    c.DisplayRequestDuration();
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "kconnected.API v1");
+                } );
             }
+
 
             app.UseHttpsRedirection();
 

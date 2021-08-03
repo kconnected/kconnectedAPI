@@ -6,14 +6,15 @@ using kconnected.API.DTOs;
 using kconnected.API.Entities;
 using kconnected.API.Extensions;
 using kconnected.API.Repositories;
+using MorseCode.ITask;
 
 namespace kconnected.API.Services
 {
     public class SkillService : ISkillService
     {
-        private readonly IRepository<Skill> _skillRepository;
+        private readonly ISkillRepository _skillRepository;
 
-        public SkillService(IRepository<Skill> skillRepository)
+        public SkillService(ISkillRepository skillRepository)
         {
             _skillRepository = skillRepository;
         }
@@ -35,7 +36,7 @@ namespace kconnected.API.Services
 
         public async Task<IEnumerable<SkillDTO>> GetAsync()
         {
-           return _skillRepository.GetItemsAsync().Result.Select(x => x.AsDTO()).ToList();
+           return (await _skillRepository.GetItemsAsync()).Select(x => x.AsDTO()).ToList();
         }
 
         public Task<SkillDTO> UpdateAsync(UpdateSkillDTO item)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MorseCode.ITask;
 
 namespace kconnected.API.Repositories
@@ -8,8 +9,6 @@ namespace kconnected.API.Repositories
     {
         ITask<T> GetItemAsync(Guid id);
         ITask<IEnumerable<T>> GetItemsAsync();
-
-        ITask<bool> ExistsAsync( string name );
 
         ITask<T> GetItemAsync( string name);
     }

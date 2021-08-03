@@ -9,11 +9,12 @@ namespace kconnected.API.Entities
         [Key]
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "Leeroy";
 
-        public string Surname { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
+        public string Surname { get; set; } = "Jenkins";
+
+        public string UserName { get; set; } = "";
+        public string Email { get; set; } = "";
         public DateTimeOffset RegistrationDate { get; set; }
 
         public string FullName { get { 
@@ -23,7 +24,9 @@ namespace kconnected.API.Entities
                 return $"{Name} {Surname}";
          } }
 
-        public List<Skill> Skills { get; set; }
+        public List<Skill>? Skills { get; set; }
+
+        
 
     }
 }

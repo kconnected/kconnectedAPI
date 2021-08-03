@@ -7,27 +7,27 @@ using MorseCode.ITask;
 
 namespace kconnected.API.Repositories
 {
-    public class InMemoryDbRepository<T> : IRepository<T> where T : class, IEntity
+    public class UserRepository : IUserRepository
     {
         protected readonly DbContext _dbContext;
-        protected readonly DbSet<T> _dbSet;
+        protected readonly DbSet<User> _dbSet;
 
-        public InMemoryDbRepository(DbContext dbContext)
+        public UserRepository(DbContext dbContext)
         {
             _dbContext = dbContext;
-            _dbSet = dbContext.Set<T>();
+            _dbSet = dbContext.Set<User>();
         }
-        public async Task AddItemAsync(T entity)
+        public async Task AddItemAsync(User entity)
         {
             await _dbSet.AddAsync(entity);
         }
 
-        public async ITask<T> GetItemAsync(Guid id)
+        public async ITask<User> GetItemAsync(Guid id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public async ITask<IEnumerable<T>> GetItemsAsync()
+        public async ITask<IEnumerable<User>> GetItemsAsync()
         {
             return await _dbSet.ToListAsync();
         }
@@ -43,18 +43,18 @@ namespace kconnected.API.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateItemAsync(T entity)
+        public async Task UpdateItemAsync(User entity)
         {
             var item = await _dbSet.FindAsync(entity.Id);
             _dbSet.Update(item);
         }
 
-        public async ITask<bool> ExistsAsync( string name )
+        public async ITask<bool> ExistsAsync( string? name = null, string? email = null)
         {
-            return await _dbSet.AnyAsync(e => e.Name == name);
+            return await _dbSet.AnyAsync(e => e.Name == name  || e.Email == email );
         }
 
-        public async ITask<T> GetItemAsync(string name)
+        public async ITask<User> GetItemAsync(string name)
         {
             return await _dbSet.FirstOrDefaultAsync(e => e.Name == name);
         }

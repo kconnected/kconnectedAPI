@@ -14,11 +14,11 @@ namespace kconnected.API.Services
 
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Skill> _skillRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ISkillRepository _skillRepository;
 
 
-        public UserService(IRepository<User> userRepository, IRepository<Skill> skillRepository)
+        public UserService(IUserRepository userRepository, ISkillRepository skillRepository)
         {
             _userRepository = userRepository;
             _skillRepository = skillRepository;
@@ -36,23 +36,33 @@ namespace kconnected.API.Services
                 Skills = new List<Skill>()
                 
             };
+            var loadingTasks = new List<Task>();
             foreach (var skill in item.Skills)
             {
-                if(_skillRepository.ExistsAsync(skill.Name).Result)
-                {
-                    toCreate.Skills.Add(_skillRepository.GetItemAsync(skill.Name).AsTask().Result);
-                }
-                else
-                {
-                    var newskill = skill.AsEntity();
-                    toCreate.Skills.Add(newskill);
-                }   
+                var task = UserAddSkill(toCreate,skill);
+                loadingTasks.Add(task);
+
             }
+
+            await Task.WhenAll(loadingTasks);  
 
             await _userRepository.AddItemAsync(toCreate);
             await _userRepository.SaveChangesAsync();
 
-            return _userRepository.GetItemAsync(toCreate.Id).Result.AsDTO();
+            return (await _userRepository.GetItemAsync(toCreate.Id)).AsDTO();
+        }
+
+        private async Task UserAddSkill(User toCreate,CreateSkillDTO skill)
+        {
+            if(await _skillRepository.ExistsAsync(skill.Name))
+            {
+                toCreate.Skills?.Add(await _skillRepository.GetItemAsync(skill.Name));
+            }
+            else
+            {
+                var newskill = skill.AsEntity();
+                toCreate.Skills?.Add(newskill);
+            }   
         }
 
         public Task DeleteAsync(Guid id)
@@ -67,8 +77,14 @@ namespace kconnected.API.Services
 
         public async Task<IEnumerable<UserDTO>> GetAsync()
         {
-            var result = _userRepository.GetItemsAsync().Result.Select(x => x.AsDTO()).ToList();
-            return result;
+            return (await _userRepository.GetItemsAsync()).Select(x => x.AsDTO()).ToList();
+        }
+
+        public async Task<bool> ExistsAsync(string? username = null, string? email = null)
+        {
+            
+            return await _userRepository.ExistsAsync(username,email);
+
         }
 
         public Task<UserDTO> UpdateAsync(UpdateUserDTO item)
