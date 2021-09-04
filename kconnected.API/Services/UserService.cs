@@ -8,22 +8,26 @@ using kconnected.API.Extensions;
 using kconnected.API.Repositories;
 using MorseCode.ITask;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
+using kconnected.API.Data;
 
 namespace kconnected.API.Services
 {
 
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+
+
         private readonly ISkillRepository _skillRepository;
+        private readonly IUserRepository _userRepository;
 
 
-        public UserService(IUserRepository userRepository, ISkillRepository skillRepository)
+        public UserService(ISkillRepository skillRepository, IUserRepository userRepository)
         {
-            _userRepository = userRepository;
             _skillRepository = skillRepository;
+            _userRepository = userRepository;
         }
-        public async Task<UserDTO> CreateAsync(CreateUserDTO item)
+        public async  Task<UserDTO> CreateAsync(CreateUserDTO item)
         {
             User toCreate = new()
             {
@@ -36,43 +40,56 @@ namespace kconnected.API.Services
                 Skills = new List<Skill>()
                 
             };
-            var loadingTasks = new List<Task>();
-            foreach (var skill in item.Skills)
-            {
-                var task = UserAddSkill(toCreate,skill);
-                loadingTasks.Add(task);
-
-            }
-
-            await Task.WhenAll(loadingTasks);  
 
             await _userRepository.AddItemAsync(toCreate);
             await _userRepository.SaveChangesAsync();
 
+            //Add Skills here after adding the user
+            await BatchAddUserSkills(toCreate.Id,item.Skills);
+
             return (await _userRepository.GetItemAsync(toCreate.Id)).AsDTO();
         }
 
-        private async Task UserAddSkill(User toCreate,CreateSkillDTO skill)
+        public async Task BatchAddUserSkills(Guid uid,List<CreateSkillDTO> skillList)
         {
-            if(await _skillRepository.ExistsAsync(skill.Name))
+            //var user = await _userRepository.GetItemAsync(uid);
+            if(skillList.Count == 0)
             {
-                toCreate.Skills?.Add(await _skillRepository.GetItemAsync(skill.Name));
+                throw new InvalidOperationException($"Skills list is Empty");
             }
-            else
-            {
-                var newskill = skill.AsEntity();
-                toCreate.Skills?.Add(newskill);
-            }   
+
+            ConcurrentBag<Skill> skillBag = new();
+            Parallel.ForEach(skillList, async skill =>{
+                                
+                var skillRepository = RepositoryFactory.GetRepositoryInstance<Skill,InMemorySkillRepository>(new kconnectedAPIDbContext());
+                var userRepository = RepositoryFactory.GetRepositoryInstance<User,InMemoryUserRepository>(new kconnectedAPIDbContext());
+                if(await skillRepository.ExistsAsync(skill.Name))
+                {
+                    
+                    await userRepository.AddSkillAsync(uid,await skillRepository.GetItemAsync(skill.Name));
+                    
+                }
+                else
+                {
+                    var newskill = skill.AsEntity();
+                    await skillRepository.AddItemAsync(newskill);
+                    await skillRepository.SaveChangesAsync();
+                    await userRepository.AddSkillAsync(uid,await skillRepository.GetItemAsync(skill.Name));
+                }
+            });
+
+            await _userRepository.SaveChangesAsync();
         }
+
 
         public Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return _userRepository.RemoveItemAsync(id);
         }
 
-        public Task<UserDTO> GetAsync(Guid id)
+        public async Task<UserDTO> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return (await _userRepository.GetItemAsync(id)).AsDTO();
         }
 
         public async Task<IEnumerable<UserDTO>> GetAsync()
@@ -80,16 +97,30 @@ namespace kconnected.API.Services
             return (await _userRepository.GetItemsAsync()).Select(x => x.AsDTO()).ToList();
         }
 
-        public async Task<bool> ExistsAsync(string? username = null, string? email = null)
+        public async Task<bool> ExistsWithUsernameAsync(string username)
         {
             
-            return await _userRepository.ExistsAsync(username,email);
+            return await _userRepository.ExistsWithUsernameAsync(username);
 
         }
 
-        public Task<UserDTO> UpdateAsync(UpdateUserDTO item)
+        public async Task<bool> ExistsWithEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            
+            return await _userRepository.ExistsWithEmailAsync(email);
+
+        }
+
+        public async Task<UserDTO> UpdateAsync(UpdateUserDTO item, Guid id)
+        {
+            var toUpdate = await _userRepository.GetItemAsync(id);
+            toUpdate.Email = item.Email;
+            toUpdate.Name = item.FirstName;
+            toUpdate.Surname = item.LastName;
+            await _userRepository.UpdateItemAsync(toUpdate);
+
+            return (await _userRepository.GetItemAsync(id)).AsDTO();
+
         }
     }
 }

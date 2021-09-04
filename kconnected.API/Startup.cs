@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using kconnected.API.Data;
 using kconnected.API.Entities;
@@ -34,10 +35,13 @@ namespace kconnected.API
             //Database context
             services.AddDbContext<kconnectedAPIDbContext>();
 
+            services.AddTransient<DbContext>(options => {
+                return new kconnectedAPIDbContext();
+            });
+
             //Repository layer dependencies
-            services.AddSingleton<DbContext,kconnectedAPIDbContext>();
-            services.AddSingleton<IUserRepository,UserRepository>();
-            services.AddSingleton<ISkillRepository,SkillRepository>();
+            services.AddScoped<IUserRepository,InMemoryUserRepository>();
+            services.AddScoped<ISkillRepository,InMemorySkillRepository>();
             //Service layer dependencies
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<ISkillService,SkillService>();
@@ -47,6 +51,7 @@ namespace kconnected.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "kconnected.API", Version = "v1" });
             });
+
 
         }
 

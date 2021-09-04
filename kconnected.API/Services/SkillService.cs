@@ -39,7 +39,7 @@ namespace kconnected.API.Services
            return (await _skillRepository.GetItemsAsync()).Select(x => x.AsDTO()).ToList();
         }
 
-        public Task<SkillDTO> UpdateAsync(UpdateSkillDTO item)
+        public Task<SkillDTO> UpdateAsync(UpdateSkillDTO item, Guid id)
         {
             throw new NotImplementedException();
         }

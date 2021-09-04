@@ -22,5 +22,7 @@ namespace kconnected.API.Controllers
         {
             return await _skillService.GetAsync();
         }
+
+
     }
 }

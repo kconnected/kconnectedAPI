@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace kconnected.API.Entities
 {
@@ -9,9 +10,9 @@ namespace kconnected.API.Entities
         [Key]
         public Guid Id { get; set; }
 
-        public string Name { get; set; } = "Leeroy";
+        public string Name { get; set; } = "";
 
-        public string Surname { get; set; } = "Jenkins";
+        public string Surname { get; set; } = "";
 
         public string UserName { get; set; } = "";
         public string Email { get; set; } = "";
@@ -24,7 +25,7 @@ namespace kconnected.API.Entities
                 return $"{Name} {Surname}";
          } }
 
-        public List<Skill>? Skills { get; set; }
+        public virtual List<Skill>? Skills { get; set; }
 
         
 
