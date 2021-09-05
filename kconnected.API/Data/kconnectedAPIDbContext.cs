@@ -1,6 +1,7 @@
 using System;
 using kconnected.API.Entities;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 #nullable disable
 namespace kconnected.API.Data
@@ -16,7 +17,8 @@ namespace kconnected.API.Data
             base.OnConfiguring(optionsBuilder);
             //optionsBuilder.UseSqlServer("Server=tcp:becerekh.database.windows.net,1433;Initial Catalog=kconnectedAPIDB;Persist Security Info=False;User ID=becerekhsa;Password=Becereksa0509971997;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             optionsBuilder.UseInMemoryDatabase("kconnectedInMemoryDb");
-            optionsBuilder.LogTo(Console.WriteLine);
+            optionsBuilder.LogTo(Log.Information);
+            
             
         }
            

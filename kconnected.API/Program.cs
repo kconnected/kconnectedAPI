@@ -18,7 +18,7 @@ namespace kconnected.API
             Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .WriteTo.Console()
+            .WriteTo.Async(writeTo => writeTo.Console())
             .CreateLogger();
 
             try
