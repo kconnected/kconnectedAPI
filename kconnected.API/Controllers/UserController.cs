@@ -5,6 +5,7 @@ using kconnected.API.DTOs;
 using kconnected.API.Entities;
 using kconnected.API.Repositories;
 using kconnected.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,53 +18,27 @@ namespace kconnected.API.Controllers
     {
         private readonly IUserService _userService;
         
-        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService userService, ILogger<UserController> logger)
+        public UserController(IUserService userService)
         {
-            _userService = userService;
-            _logger = logger;
-            
+            _userService = userService;            
         }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDTO))]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesErrorResponseType(typeof(string))]
-        public async Task<ActionResult<UserDTO>> CreateUserAsync(CreateUserDTO user)
-        {
-            string Error = "";
-            if(await _userService.ExistsWithUsernameAsync(user.UserName))
-            {
-                Error = $"Username {user.UserName} is not available\n";
-            }
-            if(await _userService.ExistsWithEmailAsync(user.Email))
-            {
-                Error += $"Email {user.Email} is already in use\n";
-            }
-            if(!string.IsNullOrWhiteSpace(Error))
-                return Conflict(Error);
-            var createdUser = await _userService.CreateAsync(user);
-            //_logger.LogInformation($"Created {createdUser} @ {DateTimeOffset.Now}");
-            return CreatedAtAction(nameof(GetUserAsync), new { id = createdUser.Id }, createdUser);
-        }
 
-        // [HttpPatch("{id}")]
-        // public async Task<ActionResult<UserDTO>> AddUserSkills(Guid id,List<CreateSkillDTO> skillList )
-        // {
-        //     await _userService.BacthAddUserSkills(id,skillList);
 
-        //     var patchedUser = _userService.GetAsync(id);
-
-        //     return Ok(patchedUser);
-
-        // }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesErrorResponseType(typeof(string))]
         public async Task<ActionResult<UserDTO>> GetUserAsync(Guid id)
         {
             var toReturn = await _userService.GetAsync(id);
+            if(toReturn == null)
+            {
+                return NotFound($"No User with Id: {id}");
+            }
+            
             return Ok(toReturn);
         }
 
@@ -73,6 +48,8 @@ namespace kconnected.API.Controllers
         {
             return await _userService.GetAsync();
         }
+
+
 
         
     }

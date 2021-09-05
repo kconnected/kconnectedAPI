@@ -2,6 +2,7 @@ using System;
 using kconnected.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
+#nullable disable
 namespace kconnected.API.Data
 {
     public class kconnectedAPIDbContext : DbContext
@@ -22,3 +23,4 @@ namespace kconnected.API.Data
 
     }
 }
+#nullable enable

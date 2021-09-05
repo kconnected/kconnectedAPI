@@ -3,10 +3,10 @@ using Xunit;
 
 namespace kconnected.UnitTests
 {
-    public class UnitTest1
+    public class UserTests
     {
         [Fact]
-        public void Test1()
+        public void Fullname_WithoutSurname_ReturnsName()
         {
 
         }

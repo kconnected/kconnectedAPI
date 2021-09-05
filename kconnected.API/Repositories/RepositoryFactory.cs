@@ -1,6 +1,7 @@
 using System;
 using kconnected.API.Entities;
 
+#nullable disable
 namespace kconnected.API.Repositories
 {
 

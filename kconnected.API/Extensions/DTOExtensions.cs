@@ -10,7 +10,7 @@ namespace kconnected.API.Extensions
     {
         public static UserDTO AsDTO(this User user)
         {
-            return new UserDTO(Id: user.Id, FirstName: user.Name,LastName: user.Surname, FullName: user.FullName,RegistrationDate: user.RegistrationDate, UserName: user.UserName ,Email: user.Email, Skills: user.Skills?.Select(x => x.AsDTO()).ToList() ?? new List<SkillDTO>() );
+            return new UserDTO(Id: user.Id, FirstName: user.Name,LastName: user.Surname, FullName: user.FullName,RegistrationDate: user.RegistrationDate, UserName: user.UserName ,Email: user.Email, Skills: user.Skills?.Select(x => x.AsDTO()).ToList() ?? new List<SkillDTO>());
         }
 
         public static SkillDTO AsDTO(this Skill skill)

@@ -7,16 +7,19 @@ using kconnected.API.Data;
 using kconnected.API.Entities;
 using kconnected.API.Repositories;
 using kconnected.API.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace kconnected.API
 {
@@ -32,6 +35,7 @@ namespace kconnected.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddControllers(o => o.Filters.Add(new AuthorizeFilter()));
             //Database context
             services.AddDbContext<kconnectedAPIDbContext>();
 
@@ -52,7 +56,6 @@ namespace kconnected.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "kconnected.API", Version = "v1" });
             });
 
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,10 +72,13 @@ namespace kconnected.API
                 } );
             }
 
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

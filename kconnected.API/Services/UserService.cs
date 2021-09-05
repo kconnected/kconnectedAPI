@@ -89,7 +89,7 @@ namespace kconnected.API.Services
 
         public async Task<UserDTO> GetAsync(Guid id)
         {
-            return (await _userRepository.GetItemAsync(id)).AsDTO();
+            return (await _userRepository.GetItemAsync(id))?.AsDTO();
         }
 
         public async Task<IEnumerable<UserDTO>> GetAsync()

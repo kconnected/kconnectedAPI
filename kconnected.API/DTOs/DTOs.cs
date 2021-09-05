@@ -24,4 +24,6 @@ namespace kconnected.API.DTOs
 
     public record UpdateSkillDTO(string Name) : IUpdateDTO;
 
+    
+
 }

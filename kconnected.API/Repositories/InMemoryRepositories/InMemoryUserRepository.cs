@@ -34,11 +34,11 @@ namespace kconnected.API.Repositories
         public async ITask<User> AddSkillAsync(Guid id, Skill skill)
         {
             var user = await _dbContext.Users.Include(t => t.Skills).FirstOrDefaultAsync(u => u.Id == id);
-            if(user.Skills.Any(s => s.Name == skill.Name))
+            if(user?.Skills?.Any(s => s.Name == skill.Name) ?? false)
             {
                 throw new InvalidOperationException($" User {user.Id}:{user.UserName} already knows {skill.Name}");
             }
-            user.Skills.Add(skill);
+            user?.Skills?.Add(skill);
 
             await SaveChangesAsync();
             return await _dbContext.Users.Include(t => t.Skills).FirstOrDefaultAsync(u => u.Id == id);
