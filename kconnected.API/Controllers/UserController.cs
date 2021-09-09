@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using kconnected.API.DTOs;
 using kconnected.API.Entities;
@@ -13,7 +14,8 @@ using Microsoft.Extensions.Logging;
 namespace kconnected.API.Controllers
 {
     [ApiController]
-    [Route("api/User")]
+    [Route("api/User/[Action]")]
+    [Authorize(Policy  = "Users", AuthenticationSchemes = "Bearer")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -38,16 +40,30 @@ namespace kconnected.API.Controllers
             {
                 return NotFound($"No User with Id: {id}");
             }
+
+            
             
             return Ok(toReturn);
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsersAsync()
         {
-            return await _userService.GetAsync();
+            var users = await _userService.GetAsync();
+            return Ok(users);
         }
+
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
+        public ActionResult<string> GetUserClaimsAsync()
+        {
+            return Ok(User.FindFirst(c => c.Type == ClaimTypes.Email).Value);
+        }
+
+
+        
 
 
 

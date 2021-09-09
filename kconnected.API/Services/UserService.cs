@@ -10,6 +10,7 @@ using MorseCode.ITask;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using kconnected.API.Data;
+using kconnected.API.Utilities;
 
 namespace kconnected.API.Services
 {
@@ -35,6 +36,7 @@ namespace kconnected.API.Services
                 Name = item.FirstName,
                 Surname = item.LastName,
                 Email = item.Email,
+                Password = SecurePasswordHasher.Hash(item.Password,1),
                 UserName = item.UserName,
                 RegistrationDate = DateTimeOffset.UtcNow,
                 Skills = new List<Skill>()
@@ -121,6 +123,11 @@ namespace kconnected.API.Services
 
             return (await _userRepository.GetItemAsync(id)).AsDTO();
 
+        }
+
+        public async Task<User> GetWithEmailAsync(string email)
+        {
+            return await _userRepository.GetWithEmailAsync(email);
         }
     }
 }

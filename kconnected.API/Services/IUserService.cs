@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using kconnected.API.DTOs;
+using kconnected.API.Entities;
 
 namespace kconnected.API.Services
 {
@@ -10,5 +11,7 @@ namespace kconnected.API.Services
         Task<bool> ExistsWithUsernameAsync(string username);
         Task<bool> ExistsWithEmailAsync(string username);
         Task BatchAddUserSkills(Guid uid,List<CreateSkillDTO> skillList);
+
+        Task<User> GetWithEmailAsync(string email);
     }
 }

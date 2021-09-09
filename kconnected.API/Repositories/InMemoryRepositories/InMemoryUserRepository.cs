@@ -78,6 +78,11 @@ namespace kconnected.API.Repositories
             return await _dbContext.Users.AnyAsync(x => x.UserName == name);
         }
 
+        public async Task<User> GetWithEmailAsync(string email)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
 
         public async ITask<User> GetItemAsync(string username)
         {
