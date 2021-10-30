@@ -129,5 +129,12 @@ namespace kconnected.API.Services
         {
             return await _userRepository.GetWithEmailAsync(email);
         }
+
+        public Task Follow(Guid currentUser, Guid followed)
+        {
+            _userRepository.AddFollowedUser(currentUser,followed);
+            return _userRepository.SaveChangesAsync();
+
+        }
     }
 }

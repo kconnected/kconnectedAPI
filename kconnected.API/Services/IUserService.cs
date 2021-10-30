@@ -13,5 +13,6 @@ namespace kconnected.API.Services
         Task BatchAddUserSkills(Guid uid,List<CreateSkillDTO> skillList);
 
         Task<User> GetWithEmailAsync(string email);
+        Task Follow(Guid currentUser, Guid  followed);
     }
 }

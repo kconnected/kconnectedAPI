@@ -12,5 +12,6 @@ namespace kconnected.API.Repositories
 
         ITask<User> AddSkillAsync(Guid id, Skill skill);
         Task<User> GetWithEmailAsync(string email);
+        Task AddFollowedUser(Guid currentUser, Guid followedUser);
     }
 }

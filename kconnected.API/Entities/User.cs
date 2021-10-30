@@ -29,6 +29,8 @@ namespace kconnected.API.Entities
 
         public virtual List<Skill>? Skills { get; set; }
 
+        public virtual List<User>? FollowedUsers {get;set;}
+
         
 
     }

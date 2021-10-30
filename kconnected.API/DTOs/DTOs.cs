@@ -14,7 +14,7 @@ namespace kconnected.API.DTOs
 
     //DTOs for Read
     public record IReadDTO();
-    public record UserDTO(Guid Id ,string FirstName, string LastName, string FullName,DateTimeOffset RegistrationDate, string UserName, [property : EmailAddress]  string Email, List<SkillDTO> Skills) : IReadDTO;
+    public record UserDTO(Guid Id ,string FirstName, string LastName, string FullName,DateTimeOffset RegistrationDate, string UserName, [property : EmailAddress]  string Email, List<SkillDTO> Skills, List<UserDTO> FollowedUsers) : IReadDTO;
     public record SkillDTO(Guid Id,string Name) : IReadDTO;
 
     //DTOs for Update

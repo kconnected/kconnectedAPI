@@ -27,8 +27,6 @@ namespace kconnected.API.Controllers
         }
 
 
-
-
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,19 +52,5 @@ namespace kconnected.API.Controllers
             return Ok(users);
         }
 
-
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
-        public ActionResult<string> GetUserClaimsAsync()
-        {
-            return Ok(User.FindFirst(c => c.Type == ClaimTypes.Email).Value);
-        }
-
-
-        
-
-
-
-        
     }
 }

@@ -88,5 +88,15 @@ namespace kconnected.API.Repositories
         {
             return await _dbContext.Users.Include(s => s.Skills).FirstOrDefaultAsync(e => e.UserName == username);
         }
+
+        public async Task AddFollowedUser(Guid currentUser, Guid followedUser)
+        {
+            var _currentUser = await GetItemAsync(currentUser);
+            var _followedUser = await GetItemAsync(followedUser);
+
+            _currentUser.FollowedUsers.Add(_followedUser);
+
+            _dbContext.Update(_currentUser);
+        }
     }
 }

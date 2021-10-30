@@ -37,6 +37,7 @@ namespace kconnected.API.Utilities
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Role,"User"),
+                    new Claim("Id",user.Id.ToString()),
                     new Claim(ClaimTypes.Name,user.Name),
                     new Claim(ClaimTypes.Surname,user.Surname),
                     new Claim("UserName",user.UserName),
